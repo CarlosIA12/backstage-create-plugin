@@ -1,0 +1,98 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: CloudFormation stack to launch a free EC2 for Backstage testing
+
+Parameters:  
+  VPCID:  
+    Description: 'The VPC ID in which the resources will be deployed'  
+    Type: 'AWS::EC2::VPC::Id'  
+  SubnetID:  
+    Description: 'The Subnet ID in which the resources will be deployed'  
+    Type: 'AWS::EC2::Subnet::Id'  
+  AMIID:  
+    Description: 'The Amazon Machine Image (AMI) ID for the instance'  
+    Type: 'AWS::EC2::Image::Id'  
+
+Resources:
+  MyKeyPair:
+    Type: AWS::EC2::KeyPair
+    Properties:
+      KeyName: MyEC2Key
+
+  MyInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - Ref: MyEC2Role
+
+  MyEC2Role:
+    Type: AWS::IAM::Role
+    Properties:
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonEC2RoleforSSM
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: sts:AssumeRole
+
+  MyEC2Policy:
+    Type: AWS::IAM::Policy
+    Properties:
+      PolicyName: MyEC2Policy
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - ec2:DescribeInstances
+              - ec2:DescribeInstanceStatus
+              - ec2:StartInstances
+              - ec2:StopInstances
+              - ec2:TerminateInstances
+              - ec2:CreateTags
+              - ec2:ModifyInstanceAttribute
+            Resource: '*'
+      Roles:
+        - Ref: MyEC2Role
+
+  MySecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Enable access to ports 3000 and 7007
+      VpcId: !Ref VPCID
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3000
+          ToPort: 3000
+          CidrIp: 187.140.223.160/32
+        - IpProtocol: tcp
+          FromPort: 7007
+          ToPort: 7007
+          CidrIp: 187.140.223.160/32
+
+  MyInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      InstanceType: t2.micro
+      KeyName: !Ref MyKeyPair
+      SecurityGroupIds:
+        - !Ref MySecurityGroup
+      SubnetId: !Ref SubnetID
+      IamInstanceProfile: !Ref MyInstanceProfile
+      ImageId: !Ref AMIID #ami-06d2c6c1b5cbaee5f is the free tier elegible AmazonLinux2 in us-west-1 as of September 2023
+      UserData:
+        Fn::Base64: |
+          #!/bin/bash
+          # Install NVM
+          curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
+
+
+Outputs:
+  InstanceId:
+    Description: Instance ID of the newly created EC2 instance
+    Value: !Ref MyInstance
+  SSHKeyPair:
+    Description: SSH Key Pair to access the EC2 instance
+    Value: !Ref MyKeyPair
