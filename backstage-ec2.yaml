@@ -10,10 +10,10 @@ Parameters:
     Type: 'AWS::EC2::Subnet::Id'  
   AMIID:  
     Description: 'The Amazon Machine Image (AMI) ID for the instance'  
-    Type: 'AWS::EC2::Image::Id'
+    Type: 'AWS::EC2::Image::Id'  
   CidrIP:  
     Description: 'The CIDR IP for the security group ingress in format x.x.x.x/32'  
-    Type: String
+    Type: String 
 
 Resources:
   MyKeyPair:
@@ -69,11 +69,11 @@ Resources:
         - IpProtocol: tcp
           FromPort: 3000
           ToPort: 3000
-          CidrIp: 187.140.223.160/32
+          CidrIp: !Ref CidrIP
         - IpProtocol: tcp
           FromPort: 7007
           ToPort: 7007
-          CidrIp: 187.140.223.160/32
+          CidrIp: !Ref CidrIP
 
   MyInstance:
     Type: AWS::EC2::Instance
@@ -84,7 +84,7 @@ Resources:
         - !Ref MySecurityGroup
       SubnetId: !Ref SubnetID
       IamInstanceProfile: !Ref MyInstanceProfile
-      ImageId: !Ref AMIID #ami-06d2c6c1b5cbaee5f is the free tier elegible AmazonLinux2 in us-west-1 as of September 2023
+      ImageId: !Ref AMIID # ami-06d2c6c1b5cbaee5f is the free tier eligible AmazonLinux2 in us-west-1 as of September 2023
       UserData:
         Fn::Base64: |
           #!/bin/bash
