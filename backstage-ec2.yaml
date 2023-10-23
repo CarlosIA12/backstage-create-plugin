@@ -10,7 +10,10 @@ Parameters:
     Type: 'AWS::EC2::Subnet::Id'  
   AMIID:  
     Description: 'The Amazon Machine Image (AMI) ID for the instance'  
-    Type: 'AWS::EC2::Image::Id'  
+    Type: 'AWS::EC2::Image::Id'
+  CidrIP:  
+    Description: 'The CIDR IP for the security group ingress in format x.x.x.x/32'  
+    Type: String
 
 Resources:
   MyKeyPair:
