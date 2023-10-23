@@ -6,7 +6,7 @@ import { Octokit } from '@octokit/rest';
 import { useApi, githubAuthApiRef } from '@backstage/core-plugin-api';
 import { useEntity } from '@backstage/plugin-catalog-react';
 
-// Type that defines how a commit looks like
+// Type that defines what a commit looks like
 export type commit = {
   url: string;
   sha: string;
