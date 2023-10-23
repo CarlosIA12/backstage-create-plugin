@@ -49,7 +49,7 @@ export const DenseTable = ({ commits }: DenseTableProps) => {
     };
   });
 
-  //Create the table using the data mapped before
+  // Create the table using the data mapped before
   return (
     <Table
       title="Example Commit List"
@@ -75,7 +75,7 @@ export const ExampleFetchComponent = () => {
   // Change the promise to use commit
   const { value, loading, error } = useAsync(async (): Promise<commit[]> => {
 
-    //request the GitHub token
+    // Request the GitHub token
     const token = await auth.getAccessToken(['repo']);
     // Client to interact with the API
     const octokit = new Octokit({ auth: token });
