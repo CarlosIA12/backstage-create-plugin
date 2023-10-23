@@ -20,7 +20,7 @@ export type commit = {
   }
 };
 
-// use commits instead of users
+// Use commits instead of users
 type DenseTableProps = {
   commits: commit[];
 };
